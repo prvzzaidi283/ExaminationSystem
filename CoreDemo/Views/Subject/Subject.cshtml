@@ -1,0 +1,124 @@
+﻿@model CoreDemo.Model.Subject
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+	ViewData["Title"] = "Subject List";
+	Layout = "_Layout";
+}
+
+<h4>Subject List</h4>
+
+<form asp-action="processSubjectTask" asp-controller="Subject" id="form0"
+	  data-ajax="true" data-ajax-method="POST"
+	  data-ajax-begin="OnBegin" data-ajax-failure="OnFailure"
+	  data-ajax-success="OnSuccess" data-ajax-complete="OnComplete">
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+	<div class="row">
+		<div class="col-md-3">
+			<label asp-for="CatID">Select Category</label>
+			<select asp-for="CatID" class="form-control" asp-items="@(new SelectList(@ViewBag.categories,"Value", "Text"))">
+				<option value="" hidden disabled selected>Select </option>
+			</select>
+			<input asp-for="Id" class="form-control" type="hidden" />
+			<span asp-validation-for="CatID" class="text-danger"></span>
+		</div>
+		<div class="col-md-3">
+			<label asp-for="SubjectName">Subject Name</label>
+			<input asp-for="SubjectName" class="form-control" type="text" />
+			<span asp-validation-for="SubjectName" class="text-danger"></span>
+
+		</div>
+		<div class="col-md-3">
+			<input type="submit" value="Save" class="btn btn-outline-success" style="margin-top:20px !important;" />
+		</div>
+	</div>
+
+</form>
+
+<div style="margin-top:20px;">
+	<table class="table table-bordered " id="taskTable">
+	</table>
+</div>
+@section Scripts
+	{
+	<partial name="_ValidationScriptsPartial" />
+
+	<script type="text/javascript">
+		function OnBegin() {
+
+		}
+
+		function OnFailure(response) {
+			alert(response.responseJSON);
+		}
+
+		function OnSuccess(response) {
+			alert(response);
+		}
+
+		function OnComplete() {
+			$("#form0")[0].reset()
+			$("#Id").val(0)
+			TaskInformation();
+		}
+	</script>
+	<script>
+		$(document).ready(function () {
+			TaskInformation();
+
+			$("#SubjectName").removeAttr("maxlength")
+		})
+		function TaskInformation() {
+			$.ajax({
+				url: "@Url.Action("GetSubjectList")",
+				type: "get",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (data) {
+					debugger;
+					if (data.length > 0) {
+						$("#taskTable").empty();
+						$("#taskTable").append("<tr><th>Sno</th><th>Category Name</th><th>Subject Name</th><th>Action</th></tr>");
+						for (var i = 0; i < data.length; i++) {
+
+							var $tr = ("<tr>");
+							var $td = ("<td>" + (i + 1) + "</td>");
+							$td = $td + ("<td class='sname'>" + data[i].categoryName + "</td>");
+							$td = $td + ("<td class='sname'>" + data[i].subjectName + "</td>");
+							$td = $td + ("<td><input type='button' class='edit' value='Edit' data-id=" + data[i].id + "></td>");
+
+							$tr = $tr + $td
+							$tr = $tr + ("</tr>");
+							$("#taskTable").append($tr);
+						}
+					}
+					else {
+						$("#taskTable").empty();
+
+					}
+
+				}
+
+			})
+
+		}
+
+		$(document).on('click', ".edit", function () {
+			var rowID = $(this).attr("data-id");
+
+			$.ajax({
+				url: "@Url.Action("GetSubjectById")",
+				type: "post",
+				data: { "Id": rowID },
+
+				success: function (data) {
+
+					$("#Id").val(data.id)
+					$("#SubjectName").val(data.subjectName)
+					$("#CatID").val(data.catID)
+
+				}
+			})
+		});
+
+	</script>
+	}

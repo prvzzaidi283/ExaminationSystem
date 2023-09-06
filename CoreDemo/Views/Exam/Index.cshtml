@@ -1,0 +1,206 @@
+﻿@model CoreDemo.Model.Exam
+@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+	ViewData["Title"] = "Exam List";
+	Layout = "_Layout";
+}
+
+<h4>Exam List</h4>
+
+<form asp-action="processExamTask" asp-controller="exam" id="form0"
+	  data-ajax="true" data-ajax-method="POST"
+	  data-ajax-begin="OnBegin" data-ajax-failure="OnFailure"
+	  data-ajax-success="OnSuccess" data-ajax-complete="OnComplete">
+	<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+	<div class="row">
+		<div class="col-md-3">
+			<label asp-for="CATID">Select Category</label>
+			<select asp-for="CATID" class="form-control drpCategory" asp-items="@(new SelectList(@ViewBag.categories,"Value", "Text"))">
+				<option value="" hidden disabled selected>Select </option>
+			</select>
+			<input asp-for="ID" class="form-control" type="hidden" />
+			<span asp-validation-for="CATID" class="text-danger"></span>
+		</div>
+		<div class="col-md-3">
+			<label asp-for="SUBID">Select Subject</label>
+			<select asp-for="SUBID" class="form-control">
+				<option value="">Select </option>
+			</select>
+			<span asp-validation-for="SUBID" class="text-danger"></span>
+
+		</div>
+		<div class="col-md-3">
+			<label asp-for="ExamName">Exam Name</label>
+			<input asp-for="ExamName" class="form-control" type="text" />
+			<span asp-validation-for="ExamName" class="text-danger"></span>
+		</div>
+	</div>
+
+	<div class="row">
+		
+		<div class="col-md-3">
+			<label asp-for="ExamDate">Exam Date</label>
+			<input asp-for="ExamDate" class="form-control" type="date" />
+			<span asp-validation-for="ExamDate" class="text-danger"></span>
+
+		</div>
+		<div class="col-md-3">
+			<label asp-for="ExamDescription">Exam Description</label>
+			<input asp-for="ExamDescription" class="form-control" type="text" />
+			<span asp-validation-for="ExamDescription" class="text-danger"></span>
+
+		</div>
+		<div class="col-md-3">
+			<label asp-for="ExamDuration">Exam Duration</label>
+			<input asp-for="ExamDuration" class="form-control" type="number" />
+			<span asp-validation-for="ExamDuration" class="text-danger"></span>
+
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="col-md-3">
+			<label asp-for="TotalMarks">Total Marks</label>
+			<input asp-for="TotalMarks" class="form-control" type="number" />
+			<span asp-validation-for="TotalMarks" class="text-danger"></span>
+
+		</div>
+		<div class="col-md-3">
+			<label asp-for="PassingMarks">Passing Marks</label>
+			<input asp-for="PassingMarks" class="form-control" type="text" />
+			<span asp-validation-for="PassingMarks" class="text-danger"></span>
+
+		</div>
+		<div class="col-md-3">
+			<input type="submit" value="Save" class="btn btn-outline-success" style="margin-top:20px !important;" />
+		</div>
+	</div>
+</form>
+
+<div style="margin-top:20px;">
+	<table class="table table-bordered " id="taskTable">
+	</table>
+</div>
+@section Scripts
+	{
+	<partial name="_ValidationScriptsPartial" />
+
+	<script type="text/javascript">
+		function OnBegin() {
+
+		}
+
+		function OnFailure(response) {
+			alert(response.responseJSON);
+		}
+
+		function OnSuccess(response) {
+			alert(response);
+		}
+
+		function OnComplete() {
+			$("#form0")[0].reset()
+			$("#ID").val(0)
+			TaskInformation();
+		}
+	</script>
+	<script>
+		$(document).ready(function () {
+			TaskInformation();
+
+			$("#ExamName").removeAttr("maxlength")
+		})
+		function TaskInformation() {
+			$.ajax({
+				url: "@Url.Action("GetExamList")",
+				type: "get",
+				dataType: "json",
+				contentType: "application/json; charset=utf-8",
+				success: function (data) {
+					debugger;
+					if (data.length > 0) {
+						$("#taskTable").empty();
+						$("#taskTable").append("<tr><th>Sno</th><th>Category Name</th><th>Subject Name</th><th>Exam Name</th><th>Exam Date</th><th>Action</th></tr>");
+						for (var i = 0; i < data.length; i++) {
+
+							var $tr = ("<tr>");
+							var $td = ("<td>" + (i + 1) + "</td>");
+							$td = $td + ("<td class='sname'>" + data[i].categoryName + "</td>");
+							$td = $td + ("<td class='sname'>" + data[i].subjectName + "</td>");
+							$td = $td + ("<td class='sname'>" + data[i].examName + "</td>");
+							$td = $td + ("<td class='sname'>" + data[i].examDateFomatted + "</td>");
+							$td = $td + ("<td><input type='button' class='edit' value='Edit' data-id=" + data[i].id + "></td>");
+
+							$tr = $tr + $td
+							$tr = $tr + ("</tr>");
+							$("#taskTable").append($tr);
+						}
+					}
+					else {
+						$("#taskTable").empty();
+
+					}
+
+				}
+
+			})
+
+		}
+
+		$(document).on('click', ".edit", function () {
+			var rowID = $(this).attr("data-id");
+
+			$.ajax({
+				url: "@Url.Action("GetExamById")",
+				type: "post",
+				data: { "Id": rowID },
+
+				success: function (data) {
+					debugger;
+					$("#ID").val(data.id)
+					$("#CATID").val(data.catid)
+					GetSubject(data.catid)
+					$("#SUBID").val(data.subid)
+					$("#ExamName").val(data.examName)
+					$("#ExamDate").val(data.examDateFomatted)
+					$("#ExamDescription").val(data.examDescription)
+					$("#ExamDuration").val(data.examDuration)
+					$("#TotalMarks").val(data.totalMarks)
+					$("#PassingMarks").val(data.passingMarks)
+				}
+			})
+		});
+
+
+		$(document).on('change', ".drpCategory", function () {
+			var ID = $(this).val();
+			GetSubject(ID);
+
+		})
+		function GetSubject(ID)
+		{
+			var SUBID = $("#SUBID");
+			$.ajax({
+				url: "@Url.Action("GetSubjectList")",
+				type: "post",
+				data: { "Id": ID },
+
+				success: function (data) {
+					SUBID.empty();
+					if(data.length>0)
+					{
+						
+						for (i = 0; i < data.length; i++) {
+
+							SUBID.append($("<option></option>").val(data[i].id).html(data[i].subjectName));
+
+						}
+					}
+				
+
+				}
+			})
+		}
+	</script>
+	}
