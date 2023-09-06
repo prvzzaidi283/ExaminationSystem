@@ -1,0 +1,598 @@
+USE [master]
+GO
+/****** Object:  Database [ExaminationSystem]    Script Date: 06-09-2023 15:42:26 ******/
+CREATE DATABASE [ExaminationSystem]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'ExaminationSystem', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DEV\MSSQL\DATA\ExaminationSystem.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'ExaminationSystem_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.DEV\MSSQL\DATA\ExaminationSystem_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+GO
+ALTER DATABASE [ExaminationSystem] SET COMPATIBILITY_LEVEL = 160
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [ExaminationSystem].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [ExaminationSystem] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [ExaminationSystem] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [ExaminationSystem] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET  DISABLE_BROKER 
+GO
+ALTER DATABASE [ExaminationSystem] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [ExaminationSystem] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET RECOVERY FULL 
+GO
+ALTER DATABASE [ExaminationSystem] SET  MULTI_USER 
+GO
+ALTER DATABASE [ExaminationSystem] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [ExaminationSystem] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [ExaminationSystem] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [ExaminationSystem] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [ExaminationSystem] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [ExaminationSystem] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+EXEC sys.sp_db_vardecimal_storage_format N'ExaminationSystem', N'ON'
+GO
+ALTER DATABASE [ExaminationSystem] SET QUERY_STORE = ON
+GO
+ALTER DATABASE [ExaminationSystem] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
+GO
+USE [ExaminationSystem]
+GO
+/****** Object:  Table [dbo].[AnswerMasterTBL]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[AnswerMasterTBL](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[QuizId] [int] NULL,
+	[Answer] [nvarchar](max) NULL,
+	[DateCreated] [datetime] NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[QuestionMaster]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[QuestionMaster](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Question] [nvarchar](max) NOT NULL,
+	[ExamID] [int] NOT NULL,
+	[Type] [int] NOT NULL,
+	[DateCreated] [datetime] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[QuestionMasterTBL]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[QuestionMasterTBL](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Question] [nvarchar](max) NOT NULL,
+	[Type] [int] NOT NULL,
+	[DateCreated] [datetime] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[QuestionTypeMasterTBL]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[QuestionTypeMasterTBL](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[QuestionType] [nvarchar](50) NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[StudentAnswerTBL]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[StudentAnswerTBL](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[StudID] [int] NOT NULL,
+	[QuizID] [int] NOT NULL,
+	[AnswerID] [int] NULL,
+	[EssayDescription] [nvarchar](max) NULL,
+	[DateCreated] [datetime] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TBLCATEGORY]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBLCATEGORY](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[CategoryName] [nvarchar](50) NOT NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TBLCorrectAnswerTBL]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBLCorrectAnswerTBL](
+	[Id] [int] NOT NULL,
+	[CorrectAnswer] [nvarchar](50) NULL,
+	[DateCreated] [datetime] NULL
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TBLEXAM]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBLEXAM](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[CATID] [int] NOT NULL,
+	[SUBID] [int] NOT NULL,
+	[ExamName] [nvarchar](100) NULL,
+	[ExamDate] [datetime] NULL,
+	[ExamDescription] [nvarchar](max) NULL,
+	[ExamDuration] [int] NOT NULL,
+	[TotalMarks] [int] NOT NULL,
+	[PassingMarks] [int] NOT NULL,
+	[CreatedDate] [datetime] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TBLSTUDENT]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBLSTUDENT](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[FirstName] [nvarchar](100) NOT NULL,
+	[LastName] [nvarchar](100) NOT NULL,
+	[DOB] [nvarchar](50) NOT NULL,
+	[StudNum] [nvarchar](10) NOT NULL,
+	[GenderID] [int] NOT NULL,
+	[PinCode] [nvarchar](50) NOT NULL,
+	[EmailAddress] [nvarchar](255) NOT NULL,
+	[Address] [nvarchar](max) NULL,
+	[MobileNo] [nvarchar](10) NOT NULL,
+	[DateCreated] [datetime] NOT NULL
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[TBLSUBJECT]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[TBLSUBJECT](
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[CatID] [int] NOT NULL,
+	[SubjectName] [nvarchar](50) NOT NULL
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[QuestionTypeMasterTBL] ON 
+GO
+INSERT [dbo].[QuestionTypeMasterTBL] ([Id], [QuestionType]) VALUES (1, N'Multiple Choice')
+GO
+INSERT [dbo].[QuestionTypeMasterTBL] ([Id], [QuestionType]) VALUES (2, N'Fill in Blanks')
+GO
+INSERT [dbo].[QuestionTypeMasterTBL] ([Id], [QuestionType]) VALUES (3, N'Essay')
+GO
+SET IDENTITY_INSERT [dbo].[QuestionTypeMasterTBL] OFF
+GO
+SET IDENTITY_INSERT [dbo].[TBLCATEGORY] ON 
+GO
+INSERT [dbo].[TBLCATEGORY] ([Id], [CategoryName]) VALUES (1, N'Class 6')
+GO
+INSERT [dbo].[TBLCATEGORY] ([Id], [CategoryName]) VALUES (2, N'Class 7')
+GO
+SET IDENTITY_INSERT [dbo].[TBLCATEGORY] OFF
+GO
+SET IDENTITY_INSERT [dbo].[TBLEXAM] ON 
+GO
+INSERT [dbo].[TBLEXAM] ([ID], [CATID], [SUBID], [ExamName], [ExamDate], [ExamDescription], [ExamDuration], [TotalMarks], [PassingMarks], [CreatedDate]) VALUES (1, 1, 3, N'English Language -1', CAST(N'2023-09-08T00:00:00.000' AS DateTime), N'English Language -1', 60, 50, 30, CAST(N'2023-09-05T20:39:24.090' AS DateTime))
+GO
+INSERT [dbo].[TBLEXAM] ([ID], [CATID], [SUBID], [ExamName], [ExamDate], [ExamDescription], [ExamDuration], [TotalMarks], [PassingMarks], [CreatedDate]) VALUES (2, 1, 1, N'Bangla Language -1', CAST(N'2023-09-16T00:00:00.000' AS DateTime), N'Bangla Language -1', 50, 50, 30, CAST(N'2023-09-05T21:06:52.617' AS DateTime))
+GO
+SET IDENTITY_INSERT [dbo].[TBLEXAM] OFF
+GO
+SET IDENTITY_INSERT [dbo].[TBLSTUDENT] ON 
+GO
+INSERT [dbo].[TBLSTUDENT] ([ID], [FirstName], [LastName], [DOB], [StudNum], [GenderID], [PinCode], [EmailAddress], [Address], [MobileNo], [DateCreated]) VALUES (1, N'PARVEZ', N'ZAIDI', N'2023-09-08', N'123456890', 1, N'226003', N'prvzzaidi283@gmail.com', N'INDIA', N'8577040767', CAST(N'2023-09-06T00:38:42.737' AS DateTime))
+GO
+INSERT [dbo].[TBLSTUDENT] ([ID], [FirstName], [LastName], [DOB], [StudNum], [GenderID], [PinCode], [EmailAddress], [Address], [MobileNo], [DateCreated]) VALUES (2, N'PARVEZ', N'ZAIDI', N'2023-09-08', N'123456', 1, N'226003', N'prvzzaidi283@gmail.com', N'INDIA', N'8577040767', CAST(N'2023-09-06T10:23:58.127' AS DateTime))
+GO
+SET IDENTITY_INSERT [dbo].[TBLSTUDENT] OFF
+GO
+SET IDENTITY_INSERT [dbo].[TBLSUBJECT] ON 
+GO
+INSERT [dbo].[TBLSUBJECT] ([ID], [CatID], [SubjectName]) VALUES (1, 1, N'Bangla')
+GO
+INSERT [dbo].[TBLSUBJECT] ([ID], [CatID], [SubjectName]) VALUES (2, 1, N'English')
+GO
+INSERT [dbo].[TBLSUBJECT] ([ID], [CatID], [SubjectName]) VALUES (3, 1, N'Math')
+GO
+SET IDENTITY_INSERT [dbo].[TBLSUBJECT] OFF
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetCategoryByID]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROC [dbo].[_spGetCategoryByID]
+@ID INT
+AS
+
+BEGIN
+
+SELECT * FROM TBLCATEGORY WHERE Id=@ID
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetCategoryList]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spGetCategoryList]
+
+AS
+
+BEGIN
+
+SELECT * FROM TBLCATEGORY
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetExamID]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROC [dbo].[_spGetExamID]
+@ID INT
+AS
+
+BEGIN
+
+SELECT ID,CATID,SUBID,ExamName,convert(varchar, ExamDate, 23) as ExamDateFomatted,ExamDescription,ExamDuration,TotalMarks,PassingMarks FROM TBLEXAM WHERE ID=@ID
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetStudentById]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spGetStudentById]
+
+@ID INT
+
+
+AS
+
+BEGIN
+ select * from TBLSTUDENT where ID=@ID
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetStudentList]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spGetStudentList]
+
+AS
+
+BEGIN
+ select * from TBLSTUDENT 
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetSubjectByCatID]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROC [dbo].[_spGetSubjectByCatID]
+@ID INT
+AS
+
+BEGIN
+
+SELECT * FROM TBLSUBJECT WHERE CatID=@ID
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetSubjectByID]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROC [dbo].[_spGetSubjectByID]
+@ID INT
+AS
+
+BEGIN
+
+SELECT * FROM TBLSUBJECT WHERE Id=@ID
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spGetSubjectList]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROC [dbo].[_spGetSubjectList]
+
+AS
+
+BEGIN
+
+SELECT s.ID,s.SubjectName,c.CategoryName FROM TBLSUBJECT s 
+inner join 
+(
+select Id,CategoryName from TBLCATEGORY
+
+)c
+on s.CatID = c.Id
+
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spSaveCategory]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spSaveCategory]
+
+@ID INT,
+@CategoryName nvarchar(100)
+
+AS
+
+BEGIN
+DECLARE @MessageText NVARCHAR(255)
+IF @ID =0
+BEGIN
+IF NOT EXISTS(SELECT  1 FROM TBLCATEGORY WHERE CategoryName=@CategoryName)
+BEGIN
+INSERT INTO [dbo].[TBLCATEGORY]
+           (CategoryName)
+     VALUES
+           (@CategoryName)
+		   select  1 as Result
+END
+ELSE
+BEGIN
+
+ SET @MessageText =  FORMATMESSAGE('Subject %s already exists.',@CategoryName);
+ THROW 50010, @MessageText, 1; 
+
+END
+END
+
+END
+IF @ID>0
+BEGIN
+  UPDATE  TBLCATEGORY SET CategoryName=@CategoryName WHERE Id=@ID
+  select  1 as Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spSaveExam]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spSaveExam]
+
+@ID INT,
+@CATID INT,
+@SUBID INT,
+@ExamName NVARCHAR(250),
+@ExamDate DATETIME,
+@ExamDescription NVARCHAR(MAX),
+@ExamDuration INT,
+@TotalMarks INT,
+@PassingMarks INT
+
+
+AS
+
+BEGIN
+DECLARE @MessageText NVARCHAR(255)
+IF @ID =0
+BEGIN
+IF NOT EXISTS(SELECT  1 FROM TBLEXAM WHERE ExamName=@ExamName and ExamDate=@ExamDate)
+BEGIN
+INSERT INTO [dbo].[TBLEXAM]
+           (CatID, SUBID,ExamName,ExamDate,ExamDescription,ExamDuration,TotalMarks,PassingMarks,CreatedDate)
+     VALUES
+           (@CatID,@SUBID,@ExamName,@ExamDate,@ExamDescription,@ExamDuration,@TotalMarks,@PassingMarks,GETDATE())
+		   select  1 as Result
+END
+ELSE
+BEGIN
+
+ SET @MessageText =  FORMATMESSAGE('Exam %s already schedule.',@ExamName);
+ THROW 50010, @MessageText, 1; 
+
+END
+END
+
+END
+IF @ID>0
+BEGIN
+  UPDATE  TBLEXAM SET CATID=@CATID,SUBID=@SUBID,ExamName=@ExamName,ExamDate=@ExamDate,ExamDescription=@ExamDescription,TotalMarks=@TotalMarks,PassingMarks=@PassingMarks WHERE Id=@ID
+  select  1 as Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spSaveStudent]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spSaveStudent]
+
+@ID INT,
+@FirstName NVARCHAR(100),
+@LastName NVARCHAR(100),
+@DOB NVARCHAR(50),
+@STUNUM NVARCHAR(10),
+@GenderID INT,
+@PINCODE NVARCHAR(10),
+@EmailAddress NVARCHAR(255),
+@Address NVARCHAR(MAX),
+@MobileNo NVARCHAR(10)
+
+
+AS
+
+BEGIN
+DECLARE @MessageText NVARCHAR(255)
+IF @ID =0
+BEGIN
+IF NOT EXISTS(SELECT  1 FROM TBLSTUDENT WHERE FirstName=@FirstName and LastName=@LastName and StudNum=@STUNUM and EmailAddress=@EmailAddress and MobileNo=@MobileNo)
+BEGIN
+INSERT INTO [dbo].[TBLSTUDENT]
+           (FirstName, LastName,DOB,StudNum,GenderID,PinCode,EmailAddress,Address,MobileNo,DateCreated)
+     VALUES
+           (@FirstName,@LastName,@DOB,@STUNUM,@GenderID,@PINCODE,@EmailAddress,@Address,@MobileNo,GETDATE())
+		   select  1 as Result
+END
+ELSE
+BEGIN
+
+ SET @MessageText =  FORMATMESSAGE('Student %s %s details already exists in system.',@FirstName,@LastName);
+ THROW 50010, @MessageText, 1; 
+
+END
+END
+
+END
+IF @ID>0
+BEGIN
+  UPDATE  TBLSTUDENT SET FirstName=@FirstName,LastName=@LastName,StudNum=@STUNUM,DOB=@DOB,GenderID=@GenderID,PinCode=@PINCODE,EmailAddress=@EmailAddress,Address=@Address,MobileNo=@MobileNo WHERE Id=@ID
+  select  1 as Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[_spSaveSubject]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE   PROC [dbo].[_spSaveSubject]
+
+@ID INT,
+@CatID INT,
+@SubjectName nvarchar(100)
+
+AS
+
+BEGIN
+DECLARE @MessageText NVARCHAR(255)
+IF @ID =0
+BEGIN
+IF NOT EXISTS(SELECT  1 FROM TBLSUBJECT WHERE SubjectName=@SubjectName and CatID=@CatID)
+BEGIN
+INSERT INTO [dbo].[TBLSUBJECT]
+           (CatID, SubjectName)
+     VALUES
+           (@CatID,@SubjectName)
+		   select  1 as Result
+END
+ELSE
+BEGIN
+
+ SET @MessageText =  FORMATMESSAGE('Subject %s already exists.',@SubjectName);
+ THROW 50010, @MessageText, 1; 
+
+END
+END
+
+END
+IF @ID>0
+BEGIN
+  UPDATE  TBLSUBJECT SET SubjectName=@SubjectName,CatID=@CatID WHERE Id=@ID
+  select  1 as Result
+END
+GO
+/****** Object:  StoredProcedure [dbo].[sp_GetExamList]    Script Date: 06-09-2023 15:42:27 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE   PROC [dbo].[sp_GetExamList]
+
+  AS
+  BEGIN
+  SELECT E.ID,C.CategoryName,S.SubjectName,E.ExamName,E.ExamDate, convert(varchar, ExamDate, 23) as ExamDateFomatted,E.ExamDescription,E.TotalMarks,E.PassingMarks FROM TBLEXAM E
+
+  INNER JOIN 
+  (
+    SELECT SUB.ID,SUB.SubjectName FROM  TBLSUBJECT SUB
+  )S
+  ON S.ID=E.SUBID
+  INNER JOIN
+  (
+      SELECT CAT.Id,CAT.CategoryName FROM  TBLCATEGORY CAT
+
+  )C
+   ON C.Id = E.CATID
+   END
+GO
+USE [master]
+GO
+ALTER DATABASE [ExaminationSystem] SET  READ_WRITE 
+GO
